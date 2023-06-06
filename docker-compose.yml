@@ -1,0 +1,24 @@
+version: '2.4'
+ 
+services:
+  openfortivpn:
+    image: openfortivpn-docker
+    hostname: openfortivpn
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./config:/etc/openfortivpn/
+    devices:
+      - /dev/net/tun:/dev/net/tun
+      - /dev/ppp:/dev/ppp
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 127.0.0.1:8081:8081
+    networks:
+      - openfortivpn
+
+networks:
+  openfortivpn:
+    external: false
+    name: openfortivpn

@@ -1,0 +1,7 @@
+### configuration file for openfortivpn, see man openfortivpn(1) ###
+
+host = vpnhost.com
+port = 443
+username = user@company.com
+password = mystrongpassword
+trusted-cert = add_a_hash_of_trusted_company_cert_here
