@@ -22,22 +22,31 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
     update-rc.d ssh defaults
 
 RUN apt-get -y --no-install-recommends install \
-    supervisor
+    supervisor && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create an SSH key for SSH login
+# TODO Remove in favor of dante-server
 RUN sudo ssh-keygen -t rsa -q -f "/root/.ssh/id_rsa" -N "" && \
     mv /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
-# We use supervisor instead of systemd to start multiple applications.
-COPY ./docker/supervisord.conf /etc/
-COPY ./docker/supervisor-log-prefix.sh /
+# Add a regular user for SSH proxying
+RUN useradd -rm -s /bin/false user && \
+    mkdir -p /home/user/.ssh
 
-RUN apt-get -y --no-install-recommends install \
-     git && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists/*
+COPY ./authorize_keys.sh /
+
+# We use supervisor instead of systemd to start multiple applications.
+COPY ./supervisord.conf /etc/
+COPY ./supervisor-log-prefix.sh /
+
+# SSH proxy
+EXPOSE 22
+
+# SOCKS5 proxy
+EXPOSE 8081
 
 # Start supervisord
-EXPOSE 8081
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 

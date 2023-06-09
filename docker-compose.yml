@@ -7,7 +7,8 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./config:/etc/openfortivpn/
+      - ./config:/etc/openfortivpn/config:ro
+      - ./authorized_keys:/home/user/.ssh/authorized_keys
     devices:
       - /dev/net/tun:/dev/net/tun
       - /dev/ppp:/dev/ppp
@@ -15,10 +16,5 @@ services:
       - NET_ADMIN
     ports:
       - 127.0.0.1:8081:8081
-    networks:
-      - openfortivpn
+      - 127.0.0.1:63010:22
 
-networks:
-  openfortivpn:
-    external: false
-    name: openfortivpn
