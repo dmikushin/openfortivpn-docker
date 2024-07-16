@@ -32,9 +32,10 @@ RUN sudo ssh-keygen -t rsa -q -f "/root/.ssh/id_rsa" -N "" && \
     mv /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 # Add a regular user for SSH proxying
-RUN useradd -rm -s /bin/false user && \
+RUN groupadd -g 1000 user && useradd -rm -s /bin/false -u 1000 -g 1000 user && \
     mkdir -p /home/user/.ssh
 
+# Adjust permissions for the SSH keys
 COPY ./authorize_keys.sh /
 
 # We use supervisor instead of systemd to start multiple applications.
